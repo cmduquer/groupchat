@@ -1,7 +1,16 @@
 <html>
   <body>
     <p id='server-time'></p>
+
+    <section id="messageApp">
+
+
+        </section>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/underscore/underscore-min.js"></script>
+    <script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
+    <script src="/backbone-localstorage/backbone-localstorage.min.js"></script>
     <script>
       var socket = io();
       var el = document.getElementById('server-time');
@@ -18,5 +27,203 @@
         el.innerHTML = 'Server time: ' + timeString;
       });
     </script>
+
+    <!-- Templates -->
+        <script type="text/template" id="message-template">
+            <td class="received"> <%- received %> </td>
+            <td class="user label label-info"> <%- sender %> </td>
+            <td class="message badge" id="message<%- message %>"> <%- message %> </td>
+        </script>  
+
+        <script type="text/template" id="app-template">
+            <div class="container chat-signin">
+            <form class="form-signin">
+                <h2 class="form-signin-heading">Chat sign in</h2>
+                <label for="nickname">Nickname</label> <input type="text"
+                                                              class="input-block-level" placeholder="Nickname" id="nickname">
+
+                <button class="btn btn-large btn-primary" type="submit"
+                        id="enterRoom">Sign in</button>
+            </form>
+        </div>
+            <div class="container chat-wrapper">
+               <h2 class="alert alert-success"></h2>
+
+                <section id="main">
+                    <table id="response" class="table table-bordered"></table>
+                </section>
+
+                <table id="response" class="table table-bordered"></table>
+                <fieldset>
+                    <legend>Enter your message..</legend>
+                    <div class="controls">
+                        <input type="text" class="input-block-level" placeholder="Your message..." id="message" style="height:60px"/>
+                        <input type="button" class="btn btn-large btn-block btn-primary"
+                               value="Send message" id="buttonMessage"/>
+                        <button class="btn btn-large btn-block" type="button" id="leave-room">Leave
+                            room</button>
+                    </div>
+                </fieldset>
+            </div>
+        </script>
+        <script type="text/javascript">
+
+        var wsocket;
+var $nickName;
+var $message;
+var $messageReceived;
+var $chatWindow;
+
+
+         var app = {}; // create namespace for our app
+//--------------
+// Models
+//--------------
+app.messageModel = Backbone.Model.extend({
+    defaults: {
+        message : '',
+        sender: '',
+        received: '2017'
+        
+    }
+});
+//--------------
+// Collections
+//--------------
+app.MessageList = Backbone.Collection.extend({
+    model: app.messageModel,
+    localStorage: new app.messageModel("Messages")
+});
+
+// instance of the Collection
+app.MessageList = new app.MessageList();
+
+//--------------
+// Views
+//--------------
+
+// renders individual todo items list (li)
+app.MessageView = Backbone.View.extend({
+    tagName: 'tr',
+    template: _.template($('#message-template').html()),
+    render: function () {
+        
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    }
+
+});
+
+    app.AppView = Backbone.View.extend({
+    template: _.template($('#app-template').html()),
+    render: function () {
+        this.$el.html(this.template());
+    },
+    initialize: function () {
+        this.render();
+      
+        this.input = this.$('#message');
+        console.log(this.input);
+        app.MessageList.on('add', this.addOne, this);
+        app.MessageList.on('reset', this.addAll, this);
+        // app.MessageList.fetch(); // Loads list from local storage
+        
+        console.log('view initialized');
+    },
+    events: {
+        'keypress #message': 'sendMessage',
+        'keypress #leave-room': 'leaveRoom',
+        'click #buttonMessage': 'sendMessageClick',
+        'click #enterRoom':'enterRoomClick'
+    },
+    enterRoomClick: function (e) {
+        e.preventDefault();
+        socket.emit('adduser', $nickName.val());
+        $('.chat-wrapper h2').text('Chat # ' + $nickName.val());
+        $('.chat-signin').hide();
+        $('.chat-wrapper').show();
+        $message.focus();  
+    },
+    sendMessage: function (e) {
+     if (e.which !== 13 || !this.input.val().trim()) { // ENTER_KEY = 13
+            return;
+        }
+        sendMessage();
+    },
+    sendMessageClick: function(e){
+        sendMessage();
+    },
+    leaveRoom: function (e) {
+        leaveRoom();
+    },
+    addOne: function (message) {
+        var view = new app.MessageView({model: message});
+        $('#response').append(view.render().el);
+    },
+    addAll: function () {
+        this.$('#response').html(''); // clean the todo list
+        app.MessageList.each(this.addOne, this);
+    }
+});
+
+console.log($('#messageApp'));
+app.appView = new app.AppView({el: $('#messageApp')});
+    
+    
+    
+    $(document).ready(function () {
+    $nickName = $('#nickname');
+    $message = $('#message');
+    $chatWindow = $('#response');
+    $('.chat-wrapper').hide();
+    $nickName.focus();
+});
+    function sendMessage() {
+    if ($message.val().includes('/youtube')) {
+        console.log($message.val());
+        console.log($message.val().replace("/youtube", ""))
+        getRequest($message.val().replace("/youtube", ""), $nickName.val());
+    } else {
+        var msg = '{"message":"' + $message.val() + '", "sender":"'
+                + $nickName.val() + '", "received":""}';
+        socket.emit('message', msg);
+    }
+    $message.val('').focus();
+}
+
+function getRequest(searchTerm, nickname) {
+    url = 'https://www.googleapis.com/youtube/v3/search';
+    var params = {
+        part: 'snippet',
+        key: 'AIzaSyAuyFIaDpcg2NUKpBjbyUo2rhHuiF1L7hA',
+        q: searchTerm,
+        maxResults: 1
+    };
+
+    $.getJSON(url, params, function (searchTerm) {
+        return showResults(searchTerm,nickname);
+    });
+}
+
+
+function showResults(results, nickname) {
+    var html = "";
+    var entries = results.items;
+
+    $.each(entries, function (index, value) {
+        var id =  value.id.videoId;
+        var msg = '{"message":"'+ id + '", "sender":"'
+                + nickname + '", "received":"'+ new Date() +'"}';
+        console.log(msg);
+        app.MessageList.add(JSON.parse(msg));
+         html += '<iframe id="ytplayer" type="text/html" width="640" height="360" src="http://www.youtube.com/embed/'+id+'" frameborder="0"/>';
+        $('#message'+id).html(html);
+    });
+     return html;
+    
+
+    
+}
+        </script>
   </body>
 </html>
