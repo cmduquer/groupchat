@@ -44,19 +44,25 @@ io.on('connection', (socket) => {
 			io.sockets.emit('updatechat', 'Error', 'NickName already exits');
 		} else {
 			usernames[username] = username;
-			io.sockets.emit('updatechat', usernames[username], 'you have connected');
+			// io.sockets.emit('updatechat', usernames[username], 'you have connected');
 		}
 	});
   socket.on('disconnect', () =>{
 		delete usernames[socket.username];
 		io.sockets.emit('updateusers', usernames);
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+		// socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
 	});
-  socket.on('message', () => {
-  		nickname = socket.username;
-  		console.log(nickname);
-  	io.sockets.emit('updatechat', '{"NickName":'+nickname+',"message": socket, "received" : '+new Date()+'}')
+  socket.on('message', (msg) => {
+  		console.log(msg.sender);
+  		console.log(msg.message);
+  	io.sockets.emit('updatechat', '{"sender":"'+msg.sender+'","message": "'+msg.message+'", "received" : "'+new Date()+'"}')
 			});
+    socket.on('close', () =>{
+    	console.log('close');
+		delete usernames[socket.username];
+		io.sockets.emit('updateusers', usernames);
+		// socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+	});
 });
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 1000);

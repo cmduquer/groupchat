@@ -18,10 +18,11 @@
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log('conectado');
     });
-      socket.on('updatechat', function(data,data2){
+      socket.on('updatechat', function(data){
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log(data);
-        console.log(data2);
+        var msg = jQuery.parseJSON(data); // native API
+        app.MessageList.add(msg);
     });
       socket.on('time', function(timeString) {
         el.innerHTML = 'Server time: ' + timeString;
@@ -134,7 +135,8 @@ app.MessageView = Backbone.View.extend({
         'keypress #message': 'sendMessage',
         'keypress #leave-room': 'leaveRoom',
         'click #buttonMessage': 'sendMessageClick',
-        'click #enterRoom':'enterRoomClick'
+        'click #enterRoom':'enterRoomClick',
+        'click #leave-room': 'leaveRoom'
     },
     enterRoomClick: function (e) {
         e.preventDefault();
@@ -184,8 +186,7 @@ app.appView = new app.AppView({el: $('#messageApp')});
         console.log($message.val().replace("/youtube", ""))
         getRequest($message.val().replace("/youtube", ""), $nickName.val());
     } else {
-        var msg = '{"message":"' + $message.val() + '", "sender":"'
-                + $nickName.val() + '", "received":""}';
+        var msg = {"message":  $message.val()  , "sender": $nickName.val() };
         socket.emit('message', msg);
     }
     $message.val('').focus();
@@ -223,6 +224,17 @@ function showResults(results, nickname) {
     
 
     
+}
+
+function leaveRoom() {
+     socket.emit('close', 'close');
+        // call the server-side function 'adduser' and send one parameter (value of prompt)
+        console.log('close');
+        $chatWindow.empty();
+    $('.chat-wrapper').hide();
+    $('.chat-signin').show();
+    $nickName.focus();
+
 }
         </script>
   </body>
