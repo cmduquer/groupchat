@@ -28,6 +28,7 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
 		// update the list of users in chat, client-side
 		io.sockets.emit('updateusers', usernames);
+		io.sockets.emit('updatechat', socket.username, socket);
 	});
 });
 
