@@ -15,6 +15,7 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
+const css = path.join(__dirname, '/public');
 
 // var app = express();  
 // // var server = require('http').createServer(app);  
@@ -30,6 +31,7 @@ const INDEX = path.join(__dirname, 'index.html');
 const server = express()
   .use(express.static(__dirname+'/backbone-min.js'))
   .use(express.static(__dirname + '/node_modules'))
+  .use(express.static(css))
   .use((req, res) => res.sendFile(INDEX) )
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 

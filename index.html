@@ -11,6 +11,10 @@
     <script src="/underscore/underscore-min.js"></script>
     <script src="/backbone-localstorage/test/vendor/backbone.js"></script>
     <script src="/backbone-localstorage/backbone-localstorage.min.js"></script>
+
+   
+    <link href="css/index.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
     <script>
       var socket = io();
       var el = document.getElementById('server-time');
@@ -18,11 +22,15 @@
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log('conectado');
     });
-      socket.on('updatechat', function(data){
+      socket.on('updatechat', function(data, data2){
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log(data);
-        var msg = jQuery.parseJSON(data); // native API
-        app.MessageList.add(msg);
+        if(data !== undefined && data == 'Error'){
+
+        } else {
+            var msg = jQuery.parseJSON(data); // native API
+            app.MessageList.add(msg);
+        }
     });
       socket.on('time', function(timeString) {
         el.innerHTML = 'Server time: ' + timeString;
