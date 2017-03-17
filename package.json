@@ -18,6 +18,7 @@
     "express": "",
     "jquery": "^3.2.0",
     "requirejs": "",
-    "socket.io": ""
+    "socket.io": "",
+    "backbone.marionette":""
   }
 }

@@ -16,18 +16,20 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 
-var app = express();  
-// var server = require('http').createServer(app);  
+// var app = express();  
+// // var server = require('http').createServer(app);  
 
-app.use(express.static(__dirname + '/node_modules')); 
-app.use(express.static(__dirname + '/resource'));
-app.get('/', function(req, res,next) {  
-    res.sendFile(__dirname + '/index.html');
-});
+// app.use(express.static(__dirname + '/node_modules')); 
+// app.use(express.static(__dirname + '/resource'));
+// app.get('/', function(req, res,next) {  
+//     res.sendFile(__dirname + '/index.html');
+// });
 
-// server.listen(4200);  
+// // server.listen(4200);  
 
 const server = express()
+  .use(express.static(__dirname+'/backbone-min.js'))
+  .use(express.static(__dirname + '/node_modules'))
   .use((req, res) => res.sendFile(INDEX) )
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 

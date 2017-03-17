@@ -9,8 +9,8 @@
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/underscore/underscore-min.js"></script>
-        <script src="/backbone-model/index.js"></script>
+        <script src="/resource/underscore-min.js"></script>
+        <script src="/resource/backbone.js"></script>
         <script src="/backbone-localstorage/backbone-localstorage.min.js"></script>
         <!-- <script src="resource/backbone.localStorage-min.js" type="text/javascript"></script>  -->
 
@@ -73,6 +73,46 @@
 
     </body>
          <script type="text/javascript">
+
+         var app = {}; // create namespace for our app
+//--------------
+// Models
+//--------------
+app.messageModel = Backbone.Model.extend({
+    defaults: {
+        message : '',
+        sender: '',
+        received: '2017'
+        
+    }
+});
+//--------------
+// Collections
+//--------------
+app.MessageList = Backbone.Collection.extend({
+    model: app.messageModel,
+    localStorage: new Store("Messages")
+});
+
+// instance of the Collection
+app.MessageList = new app.MessageList();
+
+//--------------
+// Views
+//--------------
+
+// renders individual todo items list (li)
+app.MessageView = Backbone.View.extend({
+    tagName: 'tr',
+    template: _.template($('#message-template').html()),
+    render: function () {
+        
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    }
+
+});
+
     app.AppView = Backbone.View.extend({
     template: _.template($('#app-template').html()),
     render: function () {
