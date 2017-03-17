@@ -17,7 +17,7 @@ io.on('connection', (socket) => {
   console.log('Client connected');
   socket.on('disconnect', () => console.log('Client disconnected'));
   socket.on('message', (socket) => io.sockets.emit('updatechat', socket, socket));
-  socket.on('adduser', function(username){
+  socket.on('adduser', (socket) =>{
 		// we store the username in the socket session for this client
 		socket.username = username;
 		// add the client's username to the global list
@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
 		// echo globally (all clients) that a person has connected
 		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
 		// update the list of users in chat, client-side
-		io.sockets.emit('updateusers', usernames);
+		//io.sockets.emit('updateusers', usernames);
 		io.sockets.emit('updatechat', socket.username, socket);
 	});
 });
