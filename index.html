@@ -26,7 +26,9 @@
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log(data);
         if(data !== undefined && data == 'Error'){
-
+            alert(data2);
+            $('.chat-signin').show();
+            $('.chat-wrapper').hide();
         } else {
             var msg = jQuery.parseJSON(data); // native API
             app.MessageList.add(msg);

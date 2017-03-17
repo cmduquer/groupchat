@@ -17,16 +17,6 @@ const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const css = path.join(__dirname, '/public');
 
-// var app = express();  
-// // var server = require('http').createServer(app);  
-
-// app.use(express.static(__dirname + '/node_modules')); 
-// app.use(express.static(__dirname + '/resource'));
-// app.get('/', function(req, res,next) {  
-//     res.sendFile(__dirname + '/index.html');
-// });
-
-// // server.listen(4200);  
 
 const server = express()
   .use(express.static(__dirname+'/backbone-min.js'))
@@ -43,7 +33,9 @@ io.on('connection', (socket) => {
 		socket.username = username;
 		console.log(usernames[username]);
 		if(usernames[username] !== undefined){
-			io.sockets.emit('updatechat', 'Error', 'NickName already exits');
+			console.log(socket.id);
+			// io.sockets.emit('updatechat', 'Error', 'NickName already exits');
+			io.sockets.connected[socket.id].emit('updatechat', 'Error', 'NickName already exits');
 		} else {
 			usernames[username] = username;
 			// io.sockets.emit('updatechat', usernames[username], 'you have connected');
