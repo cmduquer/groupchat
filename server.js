@@ -3,6 +3,7 @@
 
 // usernames which are currently connected to the chat
 var usernames = {};
+var nickname;
 
 const express = require('express');
 const socketIO = require('socket.io');
@@ -19,8 +20,6 @@ const io = socketIO(server);
 
 io.on('connection', (socket) => {
   console.log('Client connected');
-  socket.on('disconnect', () => console.log('Client disconnected'));
-  socket.on('message', (socket) => io.sockets.emit('updatechat', socket, socket));
   socket.on('adduser', (username) =>{
 		// we store the username in the socket session for this client
 		socket.username = username;
@@ -42,6 +41,13 @@ io.on('connection', (socket) => {
 		// echo globally that this client has left
 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
 	});
+  socket.on('message', (socket) => {
+  		nickname = socket.username;
+  		console.log(nickname);
+  	io.sockets.emit('updatechat', {
+  		
+  		"NickName":nickname,"message": socket, "received" : new Date()})
+							});
 });
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
