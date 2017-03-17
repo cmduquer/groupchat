@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 
 var app = express();  
-var server = require('http').createServer(app);  
+// var server = require('http').createServer(app);  
 
 app.use(express.static(__dirname + '/node_modules')); 
 app.use(express.static(__dirname + '/resource'));
@@ -25,11 +25,11 @@ app.get('/', function(req, res,next) {
     res.sendFile(__dirname + '/index.html');
 });
 
-server.listen(4200);  
+// server.listen(4200);  
 
-// const server = express()
-//   .use((req, res) => res.sendFile(INDEX) )
-//   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+const server = express()
+  .use((req, res) => res.sendFile(INDEX) )
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(server);
 
