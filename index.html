@@ -216,7 +216,7 @@ function showResults(results, nickname) {
                 + nickname + '", "received":"'+ new Date() +'"}';
         console.log(msg);
         app.MessageList.add(JSON.parse(msg));
-         html += '<iframe id="ytplayer" type="text/html" width="640" height="360" src="http://www.youtube.com/embed/'+id+'" frameborder="0"/>';
+         html += '<iframe id="ytplayer" type="text/html" width="640" height="360" src="https://www.youtube.com/embed/'+id+'" frameborder="0"/>';
         $('#message'+id).html(html);
     });
      return html;
