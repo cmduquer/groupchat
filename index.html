@@ -9,9 +9,10 @@
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log('conectado');
     });
-      socket.on('updatechat', function(data){
+      socket.on('updatechat', function(data,data2){
         // call the server-side function 'adduser' and send one parameter (value of prompt)
         console.log(data);
+        console.log(data2);
     });
       socket.on('time', function(timeString) {
         el.innerHTML = 'Server time: ' + timeString;

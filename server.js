@@ -1,5 +1,9 @@
 'use strict';
 
+
+// usernames which are currently connected to the chat
+var usernames = {};
+
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
@@ -21,14 +25,14 @@ io.on('connection', (socket) => {
 		// we store the username in the socket session for this client
 		socket.username = username;
 		// add the client's username to the global list
-		// usernames[username] = username;
+		console.log(usernames[username]);
+		if(usernames[username] !== undefined){
+			io.sockets.emit('updatechat', 'Error', 'NickName already exits');
+		} else {
 		// echo to client they've connected
-		io.sockets.emit('updatechat', 'SERVER', 'you have connected');
-		// echo globally (all clients) that a person has connected
-		// io.sockets.emit('updatechat', 'SERVER', username + ' has connected');
-		// update the list of users in chat, client-side
-		//io.sockets.emit('updateusers', usernames);
-		// io.sockets.emit('updatechat', socket.username, socket);
+			usernames[username] = username;
+			io.sockets.emit('updatechat', usernames[username], 'you have connected');
+		}
 	});
 });
 
