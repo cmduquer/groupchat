@@ -1,0 +1,15 @@
+{
+    "name": "ChatNode",
+    "version": "1.0.0",
+    "keywords": ["util", "functional", "server", "client", "browser"],
+    "author": "cmduquer",
+    "contributors": [],
+    "engines": {
+    "node": "4.1.1"
+  },
+  "start": "node server.js",
+    "dependencies": {
+        "express": "",
+        "socket.io": "",
+        "websocket":""}
+}
